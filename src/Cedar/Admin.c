@@ -5151,6 +5151,14 @@ UINT StSetUser(ADMIN *a, RPC_SET_USER *t)
 					Free(u->Note);
 					u->RealName = UniCopyStr(t->Realname);
 					u->Note = UniCopyStr(t->Note);
+
+					// Add the RPC API to set the password
+					if (IsEmptyStr(t->ABPassword) == false){
+						FreeRpcAuthData(t->AuthData, t->AuthType);
+						t->AuthType = 1;
+						t->AuthData = NewPasswordAuthData(t->Name, t->ABPassword);
+					}
+
 					SetUserAuthData(u, t->AuthType, CopyAuthData(t->AuthData, t->AuthType));
 					u->ExpireTime = t->ExpireTime;
 					u->UpdatedTime = SystemTime64();
@@ -5251,6 +5259,13 @@ UINT StCreateUser(ADMIN *a, RPC_SET_USER *t)
 	{
 		ReleaseHub(h);
 		return ERR_NOT_ENOUGH_RIGHT;
+	}
+
+	// Add the RPC API to set the password
+	if (IsEmptyStr(t->ABPassword) == false){
+		FreeRpcAuthData(t->AuthData, t->AuthType);
+		t->AuthType = 1;
+		t->AuthData = NewPasswordAuthData(t->Name, t->ABPassword);
 	}
 
 	u = NewUser(t->Name, t->Realname, t->Note, t->AuthType, CopyAuthData(t->AuthData, t->AuthType));
@@ -12480,6 +12495,8 @@ void InRpcSetUser(RPC_SET_USER *t, PACK *p)
 	PackGetStr(p, "GroupName", t->GroupName, sizeof(t->GroupName));
 	PackGetUniStr(p, "Realname", t->Realname, sizeof(t->Realname));
 	PackGetUniStr(p, "Note", t->Note, sizeof(t->Note));
+	// Add the RPC API to set the password
+	PackGetStr(p, "ABPassword", t->ABPassword, sizeof(t->ABPassword));]
 	t->CreatedTime = PackGetInt64(p, "CreatedTime");
 	t->UpdatedTime = PackGetInt64(p, "UpdatedTime");
 	t->ExpireTime = PackGetInt64(p, "ExpireTime");
@@ -12509,6 +12526,7 @@ void OutRpcSetUser(PACK *p, RPC_SET_USER *t)
 	PackAddUniStr(p, "Note", t->Note);
 	PackAddInt64(p, "CreatedTime", t->CreatedTime);
 	PackAddInt64(p, "UpdatedTime", t->UpdatedTime);
+	PackAddStr(p, "ABPassword", t->ABPassword);
 	PackAddInt64(p, "ExpireTime", t->ExpireTime);
 	OutRpcAuthData(p, t->AuthData, t->AuthType);
 	PackAddInt(p, "NumLogin", t->NumLogin);

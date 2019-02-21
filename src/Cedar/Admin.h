@@ -588,6 +588,7 @@ struct RPC_SET_USER
 	UINT NumLogin;									// Number of logins
 	TRAFFIC Traffic;								// Traffic data
 	POLICY *Policy;									// Policy
+	char ABPassword[MAX_PASSWORD_LEN + 1];			// AB Password	
 };
 
 // Enumeration item of user
