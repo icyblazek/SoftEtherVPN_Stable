@@ -12496,7 +12496,7 @@ void InRpcSetUser(RPC_SET_USER *t, PACK *p)
 	PackGetUniStr(p, "Realname", t->Realname, sizeof(t->Realname));
 	PackGetUniStr(p, "Note", t->Note, sizeof(t->Note));
 	// Add the RPC API to set the password
-	PackGetStr(p, "ABPassword", t->ABPassword, sizeof(t->ABPassword));]
+	PackGetStr(p, "ABPassword", t->ABPassword, sizeof(t->ABPassword));
 	t->CreatedTime = PackGetInt64(p, "CreatedTime");
 	t->UpdatedTime = PackGetInt64(p, "UpdatedTime");
 	t->ExpireTime = PackGetInt64(p, "ExpireTime");
